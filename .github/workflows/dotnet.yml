@@ -23,3 +23,13 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+       # Upload build artifact
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        # Artifact name
+        name: ImpoLobbyCommands
+        # A file, directory or wildcard pattern that describes what to upload
+        path: /home/runner/work/ImpoLobbyCommands/ImpoLobbyCommands/ImpoLobbyCommands/bin/Debug/netstandard2.1/ImpoLobbyCommands.dll
+        # The desired behavior if no files are found using the provided path (warn error ignore)
+        if-no-files-found: warn
