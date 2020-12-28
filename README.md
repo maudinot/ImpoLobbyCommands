@@ -11,3 +11,11 @@ Commands | Arguments
 /impostors | 1,2,3
 
 More content to come
+
+## Installation
+
+If you do not already have installed an Impostor server, see https://github.com/Impostor/Impostor/blob/dev/docs/Running-the-server.md
+
+1. Download ImpoLobbyCommands.dll from the lattest [release](https://github.com/maudinot/ImpoLobbyCommands/releases)
+2. Drop ImpoLobbyCommands.dll into the plugin folder of your Impostor server
+3. Restart the server
