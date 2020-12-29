@@ -16,6 +16,9 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
     {
         private readonly ILogger<LobbyCommandsPlugin> _logger;
         private Dictionary<string, Api.Innersloth.Customization.ColorType> colors = new Dictionary<string, Api.Innersloth.Customization.ColorType>();
+        private Dictionary<string, Api.Innersloth.Customization.HatType> hats = new Dictionary<string, Api.Innersloth.Customization.HatType>();
+        private Dictionary<string, Api.Innersloth.Customization.SkinType> skins = new Dictionary<string, Api.Innersloth.Customization.SkinType>();
+        private Dictionary<string, Api.Innersloth.Customization.PetType> pets = new Dictionary<string, Api.Innersloth.Customization.PetType>();
 
         public GameEventListener(ILogger<LobbyCommandsPlugin> logger)
         {
@@ -23,6 +26,18 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
             foreach (Api.Innersloth.Customization.ColorType c in Enum.GetValues(typeof(Api.Innersloth.Customization.ColorType)))
             {
                 colors[c.ToString().ToLowerInvariant()] = c;
+            }
+            foreach (Api.Innersloth.Customization.HatType h in Enum.GetValues(typeof(Api.Innersloth.Customization.HatType)))
+            {
+                hats[h.ToString().ToLowerInvariant()] = h;
+            }
+            foreach (Api.Innersloth.Customization.SkinType s in Enum.GetValues(typeof(Api.Innersloth.Customization.SkinType)))
+            {
+                skins[s.ToString().ToLowerInvariant()] = s;
+            }
+            foreach (Api.Innersloth.Customization.PetType p in Enum.GetValues(typeof(Api.Innersloth.Customization.PetType)))
+            {
+                pets[p.ToString().ToLowerInvariant()] = p;
             }
         }
 
@@ -102,7 +117,8 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                     if (e.Message.StartsWith("/impostors "))
                     {
                         int num;
-                        if (!int.TryParse(e.Message[11..].ToString(), out num))
+                        string param = e.Message[11..];
+                        if (!int.TryParse(param, out num))
                         {
                             await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
                         }
@@ -110,7 +126,67 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                         {
                             e.Game.Options.NumImpostors = num;
                             await e.Game.SyncSettingsAsync();
-                            await ServerSendChatAsync("Impostor count set to " + e.Message[11..], e.ClientPlayer.Character);
+                            await ServerSendChatAsync("Impostor count set to " + param, e.ClientPlayer.Character);
+                        }
+                    }
+                    if (e.Message.StartsWith("/killcd "))
+                    {
+                        float num;
+                        string param = e.Message[8..];
+                        if (!float.TryParse(param, out num))
+                        {
+                            await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
+                        }
+                        else
+                        {
+                            e.Game.Options.KillCooldown = num;
+                            await e.Game.SyncSettingsAsync();
+                            await ServerSendChatAsync("Kill cooldown set to " + param, e.ClientPlayer.Character);
+                        }
+                    }
+                    if (e.Message.StartsWith("/disctime "))
+                    {
+                        int num;
+                        string param = e.Message[10..];
+                        if (!int.TryParse(param, out num))
+                        {
+                            await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
+                        }
+                        else
+                        {
+                            e.Game.Options.DiscussionTime = num;
+                            await e.Game.SyncSettingsAsync();
+                            await ServerSendChatAsync("Discution time set to " + param, e.ClientPlayer.Character);
+                        }
+                    }
+                    if (e.Message.StartsWith("/speed "))
+                    {
+                        int num;
+                        string param = e.Message[7..];
+                        if (!int.TryParse(param, out num))
+                        {
+                            await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
+                        }
+                        else
+                        {
+                            e.Game.Options.PlayerSpeedMod = num;
+                            await e.Game.SyncSettingsAsync();
+                            await ServerSendChatAsync("Voting time set to " + param, e.ClientPlayer.Character);
+                        }
+                    }
+                    if (e.Message.StartsWith("/killcd "))
+                    {
+                        float num;
+                        string param = e.Message[8..];
+                        if (!float.TryParse(param, out num))
+                        {
+                            await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
+                        }
+                        else
+                        {
+                            e.Game.Options.KillCooldown = num;
+                            await e.Game.SyncSettingsAsync();
+                            await ServerSendChatAsync("Kill cooldown set to " + param, e.ClientPlayer.Character);
                         }
                     }
                 }
@@ -139,6 +215,19 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                 {
                     await e.ClientPlayer.Character.SetNameAsync(e.Message[6..]);
                     await ServerSendChatAsync($"Name changed to \"{e.Message[6..]}\"", e.ClientPlayer.Character, true);
+                }
+                if (e.Message.StartsWith("/hat "))
+                {
+                    string param = e.Message.ToLowerInvariant()[5..];
+                    if (hats.ContainsKey(param))
+                    {
+                        await e.ClientPlayer.Character.SetHatAsync(hats[param]);
+                        await ServerSendChatAsync($"Hat changed to {e.Message[5..]}", e.ClientPlayer.Character, true);
+                    }
+                    else
+                    {
+                        await ServerSendChatAsync($"Invalid hat \"{e.Message[5..]}\"", e.ClientPlayer.Character, true);
+                    }
                 }
             }
         }
