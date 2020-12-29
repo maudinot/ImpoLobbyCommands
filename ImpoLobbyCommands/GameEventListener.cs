@@ -161,9 +161,9 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                     }
                     if (e.Message.StartsWith("/speed "))
                     {
-                        int num;
+                        float num;
                         string param = e.Message[7..];
-                        if (!int.TryParse(param, out num))
+                        if (!float.TryParse(param, out num))
                         {
                             await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
                         }
