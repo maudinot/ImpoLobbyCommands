@@ -9,6 +9,8 @@ Commands | Arguments
 ------------ | -------------
 /map | Skeld, MiraHQ, Polus
 /impostors | 1,2,3
+/color | red,blue,etc
+/name | string
 
 More content to come
 
