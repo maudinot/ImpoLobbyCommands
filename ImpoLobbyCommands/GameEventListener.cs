@@ -229,6 +229,32 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                         await ServerSendChatAsync($"Invalid hat \"{e.Message[5..]}\"", e.ClientPlayer.Character, true);
                     }
                 }
+                if (e.Message.StartsWith("/skin "))
+                {
+                    string param = e.Message.ToLowerInvariant()[6..];
+                    if (skins.ContainsKey(param))
+                    {
+                        await e.ClientPlayer.Character.SetSkinAsync(skins[param]);
+                        await ServerSendChatAsync($"Skin changed to {e.Message[6..]}", e.ClientPlayer.Character, true);
+                    }
+                    else
+                    {
+                        await ServerSendChatAsync($"Invalid skin \"{e.Message[6..]}\"", e.ClientPlayer.Character, true);
+                    }
+                }
+                if (e.Message.StartsWith("/pet "))
+                {
+                    string param = e.Message.ToLowerInvariant()[5..];
+                    if (pets.ContainsKey(param))
+                    {
+                        await e.ClientPlayer.Character.SetPetAsync(pets[param]);
+                        await ServerSendChatAsync($"Pet changed to {e.Message[5..]}", e.ClientPlayer.Character, true);
+                    }
+                    else
+                    {
+                        await ServerSendChatAsync($"Invalid pet \"{e.Message[5..]}\"", e.ClientPlayer.Character, true);
+                    }
+                }
             }
         }
 
