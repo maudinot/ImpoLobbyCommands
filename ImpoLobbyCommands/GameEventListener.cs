@@ -62,7 +62,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                 {
                     if (e.Message.StartsWith("/help"))
                     {
-                        await ServerSendChatAsync("Commands list: /map, /impostors, /color, /name", e.ClientPlayer.Character);
+                        await ServerSendChatAsync("Commands list: /map, /impostors, /killcd, /disctime, /votetime, /speed, /color, /name, /hat, /skin, /pet", e.ClientPlayer.Character);
 
                     }
                     if (e.Message.StartsWith("/map "))
@@ -159,6 +159,21 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                             await ServerSendChatAsync("Discution time set to " + param, e.ClientPlayer.Character);
                         }
                     }
+                    if (e.Message.StartsWith("/votetime "))
+                    {
+                        int num;
+                        string param = e.Message[10..];
+                        if (!int.TryParse(param, out num))
+                        {
+                            await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
+                        }
+                        else
+                        {
+                            e.Game.Options.VotingTime = num;
+                            await e.Game.SyncSettingsAsync();
+                            await ServerSendChatAsync("Voting time set to " + param, e.ClientPlayer.Character);
+                        }
+                    }
                     if (e.Message.StartsWith("/speed "))
                     {
                         float num;
@@ -171,22 +186,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                         {
                             e.Game.Options.PlayerSpeedMod = num;
                             await e.Game.SyncSettingsAsync();
-                            await ServerSendChatAsync("Voting time set to " + param, e.ClientPlayer.Character);
-                        }
-                    }
-                    if (e.Message.StartsWith("/killcd "))
-                    {
-                        float num;
-                        string param = e.Message[8..];
-                        if (!float.TryParse(param, out num))
-                        {
-                            await ServerSendChatAsync("Invalid input: expected a number", e.ClientPlayer.Character, true);
-                        }
-                        else
-                        {
-                            e.Game.Options.KillCooldown = num;
-                            await e.Game.SyncSettingsAsync();
-                            await ServerSendChatAsync("Kill cooldown set to " + param, e.ClientPlayer.Character);
+                            await ServerSendChatAsync("Player speed set to " + param, e.ClientPlayer.Character);
                         }
                     }
                 }
@@ -194,7 +194,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                 {
                     if (e.Message.StartsWith("/help"))
                     {
-                        await ServerSendChatAsync("Commands list: /color, /name", e.ClientPlayer.Character);
+                        await ServerSendChatAsync("Commands list: /color, /name, /hat, /skin, /pet", e.ClientPlayer.Character);
                     }
                 }
                 //Commands common for host & non host
