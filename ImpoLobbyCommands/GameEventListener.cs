@@ -22,7 +22,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
         private Dictionary<string, Api.Innersloth.Customization.HatType> hats = new Dictionary<string, Api.Innersloth.Customization.HatType>();
         private Dictionary<string, Api.Innersloth.Customization.SkinType> skins = new Dictionary<string, Api.Innersloth.Customization.SkinType>();
         private Dictionary<string, Api.Innersloth.Customization.PetType> pets = new Dictionary<string, Api.Innersloth.Customization.PetType>();
-        private Gamemode mode = Gamemode.standard;
+        private Dictionary<IGame, Gamemode> mode = new Dictionary<IGame, Gamemode>();
         private Dictionary<IGame, Dictionary<Gamemode, GameOptionsData>> savedOptions = new Dictionary<IGame, Dictionary<Gamemode, GameOptionsData>>();
         public GameEventListener(ILogger<LobbyCommandsPlugin> logger)
         {
@@ -76,6 +76,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
             gameSavedOptions.Add(Gamemode.standard, new GameOptionsData());
             gameSavedOptions.Add(Gamemode.hns, GetHnsOptions());
             savedOptions.Add(e.Game, gameSavedOptions);
+            mode.Add(e.Game, Gamemode.standard);
             _logger.LogInformation($"Game created with code {e.Game.Code}");
         }
 
@@ -83,6 +84,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
         public void OnGameDestroyed(IGameDestroyedEvent e)
         {
             _ = savedOptions.Remove(e.Game);
+            _ = mode.Remove(e.Game);
             _logger.LogInformation($"Game with code {e.Game.Code} was destroyed");
         }
 
@@ -240,13 +242,13 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                         switch (param)
                         {
                             case "standard":
-                                if (mode != Gamemode.standard)
+                                if (mode[e.Game] != Gamemode.standard)
                                 {
                                     //save options
-                                    loadOptions(savedOptions[e.Game][mode], e.Game.Options);
+                                    loadOptions(savedOptions[e.Game][mode[e.Game]], e.Game.Options);
                                     //load options
-                                    mode = Gamemode.standard;
-                                    loadOptions(e.Game.Options, savedOptions[e.Game][mode]);
+                                    mode[e.Game] = Gamemode.standard;
+                                    loadOptions(e.Game.Options, savedOptions[e.Game][mode[e.Game]]);
                                     await e.Game.SyncSettingsAsync();
                                     await ServerSendChatAsync("Gamemode set to standard!", e.ClientPlayer.Character);
                                 }
@@ -256,13 +258,13 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                                 }
                                 break;
                             case "hns":
-                                if (mode != Gamemode.hns)
+                                if (mode[e.Game] != Gamemode.hns)
                                 {
                                     //save options
-                                    loadOptions(savedOptions[e.Game][mode], e.Game.Options);
+                                    loadOptions(savedOptions[e.Game][mode[e.Game]], e.Game.Options);
                                     //load options
-                                    mode = Gamemode.hns;
-                                    loadOptions(e.Game.Options, savedOptions[e.Game][mode]);
+                                    mode[e.Game] = Gamemode.hns;
+                                    loadOptions(e.Game.Options, savedOptions[e.Game][mode[e.Game]]);
                                     await e.Game.SyncSettingsAsync();
                                     await ServerSendChatAsync("Gamemode set to hide and seed!", e.ClientPlayer.Character);
                                 }
