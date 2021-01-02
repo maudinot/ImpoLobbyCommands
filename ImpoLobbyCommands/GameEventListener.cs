@@ -1,5 +1,6 @@
 ﻿using Impostor.Api.Events;
 using Impostor.Api.Events.Player;
+using Impostor.Api.Games;
 using Impostor.Api.Innersloth;
 using Impostor.Api.Net.Inner.Objects;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 
 namespace Impostor.Plugins.LobbyCommands.Handlers
 {
+    enum Gamemode { standard, hns };
+
     /// <summary>
     ///     A class that listens for two events.
     /// </summary>
@@ -19,7 +22,8 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
         private Dictionary<string, Api.Innersloth.Customization.HatType> hats = new Dictionary<string, Api.Innersloth.Customization.HatType>();
         private Dictionary<string, Api.Innersloth.Customization.SkinType> skins = new Dictionary<string, Api.Innersloth.Customization.SkinType>();
         private Dictionary<string, Api.Innersloth.Customization.PetType> pets = new Dictionary<string, Api.Innersloth.Customization.PetType>();
-
+        private Gamemode mode = Gamemode.standard;
+        private Dictionary<IGame, Dictionary<Gamemode, GameOptionsData>> savedOptions = new Dictionary<IGame, Dictionary<Gamemode, GameOptionsData>>();
         public GameEventListener(ILogger<LobbyCommandsPlugin> logger)
         {
             _logger = logger;
@@ -41,16 +45,57 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
             }
         }
 
+        private static GameOptionsData GetHnsOptions()
+        {
+            GameOptionsData hnsoptions = new GameOptionsData();
+            hnsoptions.ImpostorLightMod = 0.25f;
+            hnsoptions.CrewLightMod = 0.75f;
+            hnsoptions.KillDistance = KillDistances.Short;
+            hnsoptions.DiscussionTime = 0;
+            hnsoptions.VotingTime = 0;
+            hnsoptions.KillCooldown = 10f;
+            hnsoptions.NumEmergencyMeetings = 0;
+            hnsoptions.NumImpostors = 1;
+            //hnsoptions.MaxPlayers = 10;
+            hnsoptions.EmergencyCooldown = 0;
+            hnsoptions.ConfirmImpostor = true;
+            hnsoptions.VisualTasks = true;
+            hnsoptions.AnonymousVotes = true;
+            hnsoptions.NumCommonTasks = 0;
+            hnsoptions.NumShortTasks = 3;
+            hnsoptions.NumLongTasks = 1;
+            hnsoptions.PlayerSpeedMod = 1f;
+            hnsoptions.TaskBarUpdate = TaskBarUpdate.Always;
+            return hnsoptions;
+        }
+
+        [EventListener]
+        public void OnGameCreated(IGameCreatedEvent e)
+        {
+            Dictionary<Gamemode, GameOptionsData> gameSavedOptions = new Dictionary<Gamemode, GameOptionsData>();
+            gameSavedOptions.Add(Gamemode.standard, new GameOptionsData());
+            gameSavedOptions.Add(Gamemode.hns, GetHnsOptions());
+            savedOptions.Add(e.Game, gameSavedOptions);
+            _logger.LogInformation($"Game created with code {e.Game.Code}");
+        }
+
+        [EventListener]
+        public void OnGameDestroyed(IGameDestroyedEvent e)
+        {
+            _ = savedOptions.Remove(e.Game);
+            _logger.LogInformation($"Game with code {e.Game.Code} was destroyed");
+        }
+
         [EventListener]
         public void OnGameStarted(IGameStartedEvent e)
         {
-            _logger.LogInformation("Game is starting.");
+            //_logger.LogInformation("Game is starting.");
         }
 
         [EventListener]
         public void OnGameEnded(IGameEndedEvent e)
         {
-            _logger.LogInformation("Game has ended.");
+            //_logger.LogInformation("Game has ended.");
         }
 
         [EventListener]
@@ -189,6 +234,48 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                             await ServerSendChatAsync("Player speed set to " + param, e.ClientPlayer.Character);
                         }
                     }
+                    if (e.Message.StartsWith("/gamemode "))
+                    {
+                        string param = e.Message[10..];
+                        switch (param)
+                        {
+                            case "standard":
+                                if (mode != Gamemode.standard)
+                                {
+                                    //save options
+                                    loadOptions(savedOptions[e.Game][mode], e.Game.Options);
+                                    //load options
+                                    mode = Gamemode.standard;
+                                    loadOptions(e.Game.Options, savedOptions[e.Game][mode]);
+                                    await e.Game.SyncSettingsAsync();
+                                    await ServerSendChatAsync("Gamemode set to standard!", e.ClientPlayer.Character);
+                                }
+                                else
+                                {
+                                    await ServerSendChatAsync("Gamemode is already standard!", e.ClientPlayer.Character, true);
+                                }
+                                break;
+                            case "hns":
+                                if (mode != Gamemode.hns)
+                                {
+                                    //save options
+                                    loadOptions(savedOptions[e.Game][mode], e.Game.Options);
+                                    //load options
+                                    mode = Gamemode.hns;
+                                    loadOptions(e.Game.Options, savedOptions[e.Game][mode]);
+                                    await e.Game.SyncSettingsAsync();
+                                    await ServerSendChatAsync("Gamemode set to hide and seed!", e.ClientPlayer.Character);
+                                }
+                                else
+                                {
+                                    await ServerSendChatAsync("Gamemode is already hide and seed!", e.ClientPlayer.Character, true);
+                                }
+                                break;
+                            default:
+                                await ServerSendChatAsync($"invalid gamemode \"{param}\"", e.ClientPlayer.Character, true);
+                                break;
+                        }
+                    }
                 }
                 if (!e.ClientPlayer.IsHost)
                 {
@@ -271,6 +358,27 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                 await player.SendChatAsync($"{text}");
             }
             await player.SetNameAsync(playername);
+        }
+
+        private void loadOptions(GameOptionsData dest, GameOptionsData source)
+        {
+            dest.ImpostorLightMod = source.ImpostorLightMod;
+            dest.CrewLightMod = source.CrewLightMod;
+            dest.DiscussionTime = source.DiscussionTime;
+            dest.VotingTime = source.VotingTime;
+            dest.NumEmergencyMeetings = source.NumEmergencyMeetings;
+            dest.KillDistance = source.KillDistance;
+            dest.KillCooldown = source.KillCooldown;
+            dest.PlayerSpeedMod = source.PlayerSpeedMod;
+            //options.MaxPlayers = toload.MaxPlayers;
+            dest.ConfirmImpostor = source.ConfirmImpostor;
+            dest.NumImpostors = source.NumImpostors;
+            dest.NumCommonTasks = source.NumCommonTasks;
+            dest.NumShortTasks = source.NumShortTasks;
+            dest.NumLongTasks = source.NumLongTasks;
+            dest.TaskBarUpdate = source.TaskBarUpdate;
+            dest.VisualTasks = source.VisualTasks;
+            dest.EmergencyCooldown = source.EmergencyCooldown;
         }
     }
 }
