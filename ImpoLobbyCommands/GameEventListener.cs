@@ -92,6 +92,20 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
         public void OnGameStarted(IGameStartedEvent e)
         {
             //_logger.LogInformation("Game is starting.");
+            if (mode[e.Game] == Gamemode.hns)
+            {
+                foreach (var player in e.Game.Players)
+                {
+                    if (player.Character.PlayerInfo.IsImpostor)
+                    {
+                        player.Character.SetColorAsync(Api.Innersloth.Customization.ColorType.Red);
+                    }
+                    else
+                    {
+                        player.Character.SetColorAsync(Api.Innersloth.Customization.ColorType.Blue);
+                    }
+                }
+            }
         }
 
         [EventListener]
