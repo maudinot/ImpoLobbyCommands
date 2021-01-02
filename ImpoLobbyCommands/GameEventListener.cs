@@ -52,7 +52,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
             hnsoptions.CrewLightMod = 0.75f;
             hnsoptions.KillDistance = KillDistances.Short;
             hnsoptions.DiscussionTime = 0;
-            hnsoptions.VotingTime = 0;
+            hnsoptions.VotingTime = 1;
             hnsoptions.KillCooldown = 10f;
             hnsoptions.NumEmergencyMeetings = 0;
             hnsoptions.NumImpostors = 1;
