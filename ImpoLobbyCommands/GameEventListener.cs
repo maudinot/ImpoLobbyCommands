@@ -117,7 +117,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
         [EventListener]
         public async ValueTask OnPlayerChat(IPlayerChatEvent e)
         {
-            if (e.Game.GameState == GameStates.NotStarted && e.ClientPlayer.IsHost)
+            if (e.Game.GameState == GameStates.NotStarted)
             {
                 if (e.ClientPlayer.IsHost)
                 {
