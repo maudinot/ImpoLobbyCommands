@@ -3,7 +3,7 @@ A simple plugin for Impostor servers (https://github.com/Impostor/Impostor)
 
 ![.NET](https://github.com/maudinot/ImpoLobbyCommands/workflows/.NET/badge.svg)
 
-The plugin adds commands in the lobby to configure the game.
+The plugin adds commands in the lobby to configure the game. Includes a hide&seek gamemode (/gamemode hns).
 
 Commands | Arguments
 ------------ | -------------
@@ -15,6 +15,7 @@ Commands | Arguments
 /votetime | int
 /speed | float
 /killcd | float
+/gamemode | standard, hns
 /name | string
 /color | red, blue, green, pink, orange, yellow, black, white, purple, brown, cyan, lime
 /hat | nohat, astronaut, baseballcap, brainslug, bushhat, captainshat, doubletophat, flowerpot, goggles, hardhat, military, paperhat, partyhat, police, stethescope, tophat, towelwizard, ushanka, viking, wallcap, snowman, reindeer, lights, santa, tree, present, candycanes, elfhat, newyears2018, whitehat, crown, eyebrows, halohat, herocap, pipcap, plungerhat, scubahat, stickminhat, strawhat, tengallonhat, thirdeyehat, toiletpaperhat, toppat, fedora, goggles2, headphones, maskhat, papermask, security, straphat, banana, beanie, bear, cheese, cherry, egg, fedora2, flamingo, flowerpin, helmet, plant, bateyes, batwings, horns, mohawk, pumpkin, scarybag, witch, wolf, pirate, plague, machete, fred, minercap, winterhat, archae, antenna, balloon, birdnest, blackbelt, caution, chef, cophat, dorag, dumsticker, fez, generalhat, greything, huntercap, junglehat, minicrewmate, ninjamask, ramhorns, snowman2
