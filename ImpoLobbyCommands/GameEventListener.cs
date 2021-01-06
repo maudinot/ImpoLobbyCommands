@@ -217,7 +217,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                         {
                             e.Game.Options.DiscussionTime = num;
                             await e.Game.SyncSettingsAsync();
-                            await ServerSendChatAsync("Discution time set to " + param, e.ClientPlayer.Character);
+                            await ServerSendChatAsync("Discussion time set to " + param, e.ClientPlayer.Character);
                         }
                     }
                     if (e.Message.StartsWith("/votetime "))
@@ -288,7 +288,7 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                                 }
                                 break;
                             default:
-                                await ServerSendChatAsync($"invalid gamemode \"{param}\"", e.ClientPlayer.Character, true);
+                                await ServerSendChatAsync($"Invalid gamemode \"{param}\"", e.ClientPlayer.Character, true);
                                 break;
                         }
                     }
