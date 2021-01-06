@@ -280,11 +280,11 @@ namespace Impostor.Plugins.LobbyCommands.Handlers
                                     mode[e.Game] = Gamemode.hns;
                                     loadOptions(e.Game.Options, savedOptions[e.Game][mode[e.Game]]);
                                     await e.Game.SyncSettingsAsync();
-                                    await ServerSendChatAsync("Gamemode set to hide and seed!", e.ClientPlayer.Character);
+                                    await ServerSendChatAsync("Gamemode set to hide and seek!", e.ClientPlayer.Character);
                                 }
                                 else
                                 {
-                                    await ServerSendChatAsync("Gamemode is already hide and seed!", e.ClientPlayer.Character, true);
+                                    await ServerSendChatAsync("Gamemode is already hide and seek!", e.ClientPlayer.Character, true);
                                 }
                                 break;
                             default:
