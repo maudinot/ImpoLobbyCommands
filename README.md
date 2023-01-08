@@ -1,4 +1,7 @@
+# Project is no longer maintained
+
 # ImpoLobbyCommands
+
 A simple plugin for Impostor servers (https://github.com/Impostor/Impostor)
 
 ![.NET](https://github.com/maudinot/ImpoLobbyCommands/workflows/.NET/badge.svg)
